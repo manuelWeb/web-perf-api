@@ -1,8 +1,9 @@
 # Installer le runner de déploiement du backend
 
 Le workflow `Validate` s’exécute sur un runner hébergé par GitHub. Le workflow
-`Deploy to mini-forum` se lance manuellement depuis `main` et utilise un
-runner auto-hébergé pour construire l’image et lancer Docker sur le serveur.
+`Deploy to mini-forum` démarre à chaque push sur `main`, y compris après
+le merge d’une PR. Il utilise un runner auto-hébergé pour construire l’image
+et lancer Docker sur le serveur.
 
 ## 1. Vérifier le compte de déploiement
 
@@ -71,10 +72,11 @@ reste dans le fichier `.env.production` sur le serveur.
 
 ## 4. Vérifier la première livraison
 
-Dans **Actions → Deploy to mini-forum → Run workflow**, sélectionne
-`main` et lance la livraison de la révision approuvée. Vérifie que le job
-est pris par le runner backend et se termine en succès. Puis teste les
-routes publiques :
+Après le merge, ouvre **Actions → Deploy to mini-forum**. Vérifie que
+l’exécution correspond au commit arrivé sur `main`, que le runner backend
+prend le job et que celui-ci se termine en succès. Pour relancer une livraison
+à la demande, utilise **Run workflow** et sélectionne `main`.
+Puis teste les routes publiques :
 
 ```bash
 curl -fsS https://api.webperfs.webdesignord.fr/health

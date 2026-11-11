@@ -48,9 +48,10 @@ PostgreSQL est isolé sur un réseau Docker interne.
 
 Pour préparer une livraison depuis GitHub Actions, suivre le
 [guide du runner de déploiement](deployment-runner.md). Protéger `main`
-avec une PR et le contrôle `Validate`. Le workflow se lance manuellement
-depuis `main` et vérifie que la révision demandée est en tête de la branche
-et que le clone est propre.
+en exigeant une PR et le contrôle `Validate`. Le workflow démarre à chaque
+push sur `main`, y compris après un merge. Il vérifie que la révision
+demandée est en tête de la branche et que le clone est propre. Le lancement
+manuel depuis `main` reste disponible dans GitHub Actions.
 
 Pour une livraison manuelle depuis la révision approuvée :
 
