@@ -1,0 +1,29 @@
+# Renseigner les deux chemins TLS avant installation sur mini-forum.
+server {
+    listen 80;
+    listen [::]:80;
+    server_name api.webperfs.webdesignord.fr;
+
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    http2 on;
+    server_name api.webperfs.webdesignord.fr;
+
+    ssl_certificate __TLS_CERTIFICATE__;
+    ssl_certificate_key __TLS_CERTIFICATE_KEY__;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    location / {
+        proxy_pass http://127.0.0.1:3050;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
