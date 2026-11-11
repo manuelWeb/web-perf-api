@@ -30,27 +30,6 @@ trace. Utiliser Live Search pendant les essais pour voir les traces reçues
 sans attendre leur indexation. Si aucune trace ne remonte, vérifier que
 l’API peut joindre le récepteur APM et que l’Agent envoie au bon site.
 
-## Corrélation depuis le navigateur
-
-Lors d’une prochaine phase, ajouter ce réglage à la configuration existante
-du Browser SDK et définir un `traceSampleRate` adapté à la phase de test.
-
-```ts
-allowedTracingUrls: [
-  {
-    match: (url) =>
-      new URL(url).origin === 'https://api.webperfs.webdesignord.fr',
-    propagatorTypes: ['tracecontext'],
-  },
-],
-```
-
-Le SDK utilisera les en-têtes W3C `traceparent` et `tracestate`.
-L’API les autorise sur les prérequêtes CORS. Pour le déploiement, renseigner
-`CORS_ORIGINS=https://webperfs.webdesignord.fr,https://www.webperfs.webdesignord.fr`.
-Pour un essai depuis le frontend local, renseigner son origine exacte,
-port compris. Dans RUM Explorer, ouvrir une ressource Fetch ou XHR
-échantillonnée et suivre le lien vers sa trace APM.
+Le [guide frontend](frontend.md) décrit la corrélation RUM → APM.
 
 - [Instrumentation Node.js](https://docs.datadoghq.com/tracing/trace_collection/dd_libraries/nodejs/)
-- [Corrélation RUM et APM](https://docs.datadoghq.com/real_user_monitoring/connect_rum_and_traces/)
