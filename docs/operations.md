@@ -2,9 +2,9 @@
 
 ## Préparer la première installation
 
-Cloner le dépôt sur mini-forum sous le compte qui exécute le runner. Le
-frontend utilise `/opt/apps/web-perf-lab`. Le dossier proposé pour l’API
-est `/opt/apps/web-perf-api`. Le compte du runner doit pouvoir mettre à
+Cloner le dépôt sur mini-forum sous le compte qui exécute le runner.
+L’API est installée dans `/opt/apps/web-performance-lab/web-perf-api`.
+Le compte du runner doit pouvoir mettre à
 jour ce dépôt, lire `.env.production` et utiliser Docker. Limiter l’accès
 à ce compte, car l’accès au démon Docker donne des droits étendus sur l’hôte.
 
@@ -46,12 +46,12 @@ PostgreSQL est isolé sur un réseau Docker interne.
 
 ## Livrer une mise à jour
 
-Configurer le runner du dépôt API sur mini-forum avec le label
-`mini-forum`. Dans l’environnement GitHub `mini-forum`, définir
-`WEB_PERF_API_DEPLOY_DIR` sur le dossier du clone et limiter le déploiement
-à `main`. Protéger `main` avec une PR et le contrôle `Validate`.
-Le workflow de livraison se lance manuellement depuis `main`. Il vérifie
-que le SHA demandé est en tête de `main` et que le clone est propre.
+Pour préparer une livraison depuis GitHub Actions, suivre le
+[guide du runner de déploiement](deployment-runner.md). Protéger `main`
+en exigeant une PR et le contrôle `Validate`. Le workflow démarre à chaque
+push sur `main`, y compris après un merge. Il vérifie que la révision
+demandée est en tête de la branche et que le clone est propre. Le lancement
+manuel depuis `main` reste disponible dans GitHub Actions.
 
 Pour une livraison manuelle depuis la révision approuvée :
 
