@@ -1,9 +1,12 @@
 # Installer le runner de déploiement du backend
 
-Le workflow `Validate` s’exécute sur un runner hébergé par GitHub. Le workflow
-`Deploy to mini-forum` démarre à chaque push sur `main`, y compris après
-le merge d’une PR. Il utilise un runner auto-hébergé pour construire l’image
-et lancer Docker sur le serveur.
+Le job `Validate` tourne sur un runner hébergé par GitHub à l’ouverture,
+à la réouverture ou à la mise à jour d’une PR vers `main`. Exiger ce contrôle
+dans la protection de `main` pour bloquer le merge tant qu’il ne réussit pas.
+
+Le workflow `Deploy to mini-forum` démarre à chaque push sur `main`, y compris
+après le merge d’une PR. Il utilise un runner auto-hébergé pour construire
+l’image et lancer Docker sur le serveur.
 
 ## 1. Vérifier le compte de déploiement
 
