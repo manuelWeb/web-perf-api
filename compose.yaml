@@ -2,7 +2,6 @@ services:
   api:
     build:
       context: .
-      dockerfile: Dockerfile.dev
     init: true
     environment:
       PGHOST: "${PGHOST:-db}"
@@ -10,6 +9,13 @@ services:
       PGUSER: "${PGUSER:-web_perf_api}"
       PGDATABASE: "${PGDATABASE:-web_perf_api}"
       PGPASSWORD: "${PGPASSWORD:?Copy .env.example to .env}"
+      DD_TRACE_ENABLED: "${DD_TRACE_ENABLED:-false}"
+      DD_SERVICE: "${DD_SERVICE:-web-perf-api}"
+      DD_ENV: "${DD_ENV:-development}"
+      DD_VERSION: "${DD_VERSION:-0.1.0}"
+      DD_TRACE_AGENT_URL: "${DD_TRACE_AGENT_URL:-http://host.docker.internal:8126}"
+      APM_DEMO_ENABLED: "${APM_DEMO_ENABLED:-true}"
+      CORS_ORIGINS: "${CORS_ORIGINS:-}"
     ports:
       - "127.0.0.1:3000:3000"
     depends_on:
