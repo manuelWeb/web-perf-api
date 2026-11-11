@@ -1,0 +1,65 @@
+name: web-perf-api-production
+
+services:
+  api:
+    build: .
+    init: true
+    restart: unless-stopped
+    environment:
+      PGHOST: db
+      PGPORT: "${PGPORT:-5432}"
+      PGUSER: "${PGUSER:-web_perf_api}"
+      PGDATABASE: "${PGDATABASE:-web_perf_api}"
+      PGPASSWORD: "${PGPASSWORD:?Set the production PostgreSQL password}"
+      DD_TRACE_ENABLED: "${DD_TRACE_ENABLED:-false}"
+      DD_TRACE_AGENT_URL: "${DD_TRACE_AGENT_URL:-}"
+      DD_SERVICE: web-perf-api
+      DD_ENV: production
+      DD_VERSION: "${DD_VERSION:?Set the deployed version}"
+      APM_DEMO_ENABLED: "false"
+      CORS_ORIGINS: "${CORS_ORIGINS:-https://webperfs.webdesignord.fr,https://www.webperfs.webdesignord.fr}"
+    ports:
+      - "127.0.0.1:${API_HOST_PORT:?Set the mini-forum loopback port}:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [private, egress]
+    logging: &logging
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    command: ["postgres", "-p", "${PGPORT:-5432}"]
+    environment:
+      POSTGRES_USER: "${PGUSER:-web_perf_api}"
+      POSTGRES_DB: "${PGDATABASE:-web_perf_api}"
+      POSTGRES_PASSWORD: "${PGPASSWORD:?Set the production PostgreSQL password}"
+      PGPORT: "${PGPORT:-5432}"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks: [private]
+    logging: *logging
+
+networks:
+  private:
+    internal: true
+  egress:
+
+volumes:
+  postgres-data:
+    external: true
+    name: "${POSTGRES_VOLUME:-web-perf-api-production-postgres}"

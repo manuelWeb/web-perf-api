@@ -1,0 +1,47 @@
+services:
+  api:
+    build:
+      context: .
+    init: true
+    environment:
+      PGHOST: "${PGHOST:-db}"
+      PGPORT: "${PGPORT:-5432}"
+      PGUSER: "${PGUSER:-web_perf_api}"
+      PGDATABASE: "${PGDATABASE:-web_perf_api}"
+      PGPASSWORD: "${PGPASSWORD:?Copy .env.example to .env}"
+      DD_TRACE_ENABLED: "${DD_TRACE_ENABLED:-false}"
+      DD_SERVICE: "${DD_SERVICE:-web-perf-api}"
+      DD_ENV: "${DD_ENV:-development}"
+      DD_VERSION: "${DD_VERSION:-0.0.1}"
+      DD_TRACE_AGENT_URL: "${DD_TRACE_AGENT_URL:-http://host.docker.internal:8126}"
+      APM_DEMO_ENABLED: "${APM_DEMO_ENABLED:-true}"
+      CORS_ORIGINS: "${CORS_ORIGINS:-}"
+    ports:
+      - "127.0.0.1:3050:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  db:
+    image: postgres:17
+    command: ["postgres", "-p", "${PGPORT:-5432}"]
+    environment:
+      POSTGRES_USER: "${PGUSER:-web_perf_api}"
+      POSTGRES_DB: "${PGDATABASE:-web_perf_api}"
+      POSTGRES_PASSWORD: "${PGPASSWORD:?Copy .env.example to .env}"
+      PGPORT: "${PGPORT:-5432}"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:

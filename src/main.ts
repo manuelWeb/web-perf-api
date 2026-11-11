@@ -9,6 +9,17 @@ async function bootstrap(): Promise<void> {
   }
 
   const app = await NestFactory.create(AppModule);
+  const origins = (process.env.CORS_ORIGINS ?? '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+  if (origins.length > 0) {
+    app.enableCors({
+      origin: origins,
+      methods: ['GET', 'HEAD', 'OPTIONS'],
+      allowedHeaders: ['traceparent', 'tracestate'],
+    });
+  }
   app.enableShutdownHooks();
   await app.listen(port, '0.0.0.0');
 }

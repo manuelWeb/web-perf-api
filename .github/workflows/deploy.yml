@@ -1,0 +1,34 @@
+name: Deploy to mini-forum
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mini-forum-web-perf-api
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    runs-on: [self-hosted, mini-forum]
+    environment: mini-forum
+    env:
+      DEPLOY_DIR: ${{ vars.WEB_PERF_API_DEPLOY_DIR }}
+      DEPLOY_SHA: ${{ github.sha }}
+    steps:
+      - name: Deploy the approved revision
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "${DEPLOY_DIR:?Set WEB_PERF_API_DEPLOY_DIR}"
+          git fetch origin main
+          test "$(git rev-parse FETCH_HEAD)" = "$DEPLOY_SHA"
+          test -z "$(git status --porcelain)"
+          git switch main
+          git merge --ff-only "$DEPLOY_SHA"
+          test "$(git rev-parse HEAD)" = "$DEPLOY_SHA"
+          export DD_VERSION="$(git rev-parse --short=7 HEAD)"
+          bash scripts/deploy-production.sh
