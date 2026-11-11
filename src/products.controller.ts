@@ -15,9 +15,19 @@ interface Product {
   price_cents: number;
 }
 
-function positiveInteger(value: unknown, maximum: number, field: string): number {
-  if (typeof value !== 'string' || !/^[1-9][0-9]*$/.test(value) || Number(value) > maximum) {
-    throw new BadRequestException(`${field} must be an integer between 1 and ${maximum}`);
+function positiveInteger(
+  value: unknown,
+  maximum: number,
+  field: string,
+): number {
+  if (
+    typeof value !== 'string' ||
+    !/^[1-9][0-9]*$/.test(value) ||
+    Number(value) > maximum
+  ) {
+    throw new BadRequestException(
+      `${field} must be an integer between 1 and ${maximum}`,
+    );
   }
   return Number(value);
 }
